@@ -11,7 +11,11 @@ export const tmdbApi = createApi({
       query: (genreString: string) =>
         `discover/movie?api_key=${TMDB_API_KEY}&language=en-US&sort_by=popularity.desc${genreString ? `&with_genres=${genreString}` : ''}`,
     }),
+    getTrendingMovies: builder.query({
+  query: () =>
+    `trending/movie/week?api_key=${TMDB_API_KEY}&language=en-US`
+}),
   }),
 })
 
-export const { useGetPopularMoviesQuery } = tmdbApi
+export const { useGetPopularMoviesQuery, useGetTrendingMoviesQuery } = tmdbApi
