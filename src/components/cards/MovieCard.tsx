@@ -1,10 +1,15 @@
 "use client"
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux"
+import { addFavorite, removeFavorite } from "../../features/favorites/favoritesSlice"
+import { RootState } from "../../features/store"
 import axios from "axios";
 
 export default function MovieCard({ movie }: { movie: any }) {
-  // Optionally show loading state while fetching the trailer
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const favorites = useSelector((state: RootState) => state.favorites)
+  const isFav = favorites.some(f => f.type === "movie" && f.id === movie.id)
 
   const handleTrailerClick = async () => {
     setLoading(true);
@@ -13,12 +18,10 @@ export default function MovieCard({ movie }: { movie: any }) {
       const response = await axios.get(
         `https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${apiKey}&language=en-US`
       );
-      // Find the first YouTube trailer
       const trailer = response.data.results.find(
         (vid: any) => vid.site === "YouTube" && vid.type === "Trailer"
       );
       if (trailer) {
-        // Open trailer on YouTube in a new tab
         window.open(`https://www.youtube.com/watch?v=${trailer.key}`, "_blank");
       } else {
         alert("No trailer available!");
@@ -29,8 +32,24 @@ export default function MovieCard({ movie }: { movie: any }) {
     setLoading(false);
   };
 
+  const handleFavorite = () => {
+    if (!isFav) {
+      dispatch(addFavorite({ type: 'movie', id: movie.id, payload: movie }))
+    } else {
+      dispatch(removeFavorite({ type: 'movie', id: movie.id }))
+    }
+  }
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded shadow p-4 flex flex-col h-full">
+    <div className="bg-white dark:bg-gray-800 rounded shadow p-4 flex flex-col h-full relative">
+      <button
+        onClick={handleFavorite}
+        className="absolute top-2 right-2 text-2xl"
+        title={isFav ? "Remove from favorites" : "Add to favorites"}
+      >
+        {isFav ? "❤️" : "🤍"}
+      </button>
+      
       {movie.poster_path && (
         <img
           src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
