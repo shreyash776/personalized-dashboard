@@ -19,8 +19,9 @@ export default function FeedPage() {
       {newsData?.articles.map((news: any) => (
         <NewsCard key={news.url} article={news} />
       ))}
-      
+      <div className="font-semibold mb-2">MOVIES</div>
       {movieData?.results.map((movie: any) => (
+        
         <MovieCard key={movie.id} movie={movie} />
       ))}
     </div>
