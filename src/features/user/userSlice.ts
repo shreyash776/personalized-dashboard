@@ -1,6 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-type Preferences = { categories: string[]; darkMode: boolean }
-const initialState: Preferences = { categories: ['technology'], darkMode: false }
+
+
+type Preferences = {
+  categories: string[];
+  darkMode: boolean;
+  movieGenres: number[]; 
+}
+
+const initialState: Preferences = {
+  categories: ['technology'],
+  darkMode: false,
+  movieGenres: []
+}
 
 const userSlice = createSlice({
   name: 'user',
@@ -11,8 +22,14 @@ const userSlice = createSlice({
     },
     toggleDarkMode(state) {
       state.darkMode = !state.darkMode
+    },
+    
+    setMovieGenres(state, action: PayloadAction<number[]>) {
+      state.movieGenres = action.payload
     }
   }
 })
-export const { setCategories, toggleDarkMode } = userSlice.actions
+
+
+export const { setCategories, toggleDarkMode, setMovieGenres } = userSlice.actions
 export default userSlice.reducer
