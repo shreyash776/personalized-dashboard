@@ -44,29 +44,64 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
  
   const newsCategories = ['technology', 'business', 'sports', 'science', 'health', 'entertainment'];
   const musicGenres = ['pop', 'rock', 'hip-hop', 'jazz', 'electronic', 'classical', 'country', 'r&b', 'metal', 'reggae'];
+  const movieGenres = [
+  "Action",
+  "Adventure",
+  "Animation",
+  "Comedy",
+  "Crime",
+  "Documentary",
+  "Drama",
+  "Family",
+  "Fantasy",
+  "History",
+  "Horror",
+  "Music",
+  "Mystery",
+  "Romance",
+  "Science Fiction",
+  "TV Movie",
+  "Thriller",
+  "War",
+  "Western",
+];
 
-  const prompt = `
+ const prompt = `
 You are a helpful assistant that categorizes user preferences into predefined categories for news, movies, and music.
 
 User's input: """${userInput}"""
 
-Respond with a JSON object ONLY. The object must have three keys: "news", "movies", "music".
+Respond ONLY with a JSON object with keys "news", "movies", and "music":
+- "news": array of categories from [technology, business, sports, science, health, entertainment]
+- "movies": array of movie genres (name strings) from [Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy, History, Horror, Music, Mystery, Romance, Science Fiction, TV Movie, Thriller, War, Western]
+- "music": array of genres from [pop, rock, hip-hop, jazz, electronic, classical, country, r&b, metal, reggae]
 
-- The "news" value should be an array containing any relevant categories from the list: [${newsCategories.join(", ")}].
-- The "movies" value should be an array of movie genres (name strings).
-- The "music" value should be an array containing any relevant genres from the list: [${musicGenres.join(", ")}].
+Only include a category if it is clearly or strongly implied by the user input. Avoid guessing or including categories not supported by the input.
 
-Include ONLY those categories the user input clearly implies or mentions. Return empty arrays if none.
+If no categories fit, return empty arrays for that key.
 
-Example output format:
+Example 1:
+Input: "I love watching scary movies and listening to metal music."
+Output:
 {
-  "news": ["sports", "business"],
-  "movies": ["comedy", "action"],
-  "music": ["pop", "rock"]
+  "news": [],
+  "movies": ["Horror"],
+  "music": ["metal"]
 }
 
-Respond STRICTLY with the JSON object ONLY, no commentary or markdown.
+Example 2:
+Input: "I'm interested in tech news and upbeat pop songs."
+Output:
+{
+  "news": ["technology"],
+  "movies": [],
+  "music": ["pop"]
+}
+
+Respond strictly ONLY with the JSON, no explanations or markdown.
+
 `.trim();
+
 
   try {
     const llmResponse = await llm.invoke(prompt);
