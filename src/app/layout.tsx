@@ -9,14 +9,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en">
-      <body className="flex min-h-screen bg-gray-100 ">
+      <body className="flex min-h-screen ">
         <ReduxProvider>
           <InitializePreferences />
-          {/* Ensure ThemeBody is wrapped around the main content */}
+          
           <ThemeBody>
           <Sidebar />
         
-          <div className="flex-1 flex flex-col bg-white  dark:bg-green-500">
+          <div className="flex-1 flex flex-col bg-white  ">
             <Header />
             <main className="flex-1 p-4">{children}</main>
           </div>
