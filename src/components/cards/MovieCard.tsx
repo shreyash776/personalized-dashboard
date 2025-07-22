@@ -1,15 +1,15 @@
 "use client"
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux"
-import { addFavorite, removeFavorite } from "../../features/favorites/favoritesSlice"
-import { RootState } from "../../features/store"
+import { useDispatch, useSelector } from "react-redux";
+import { addFavorite, removeFavorite } from "../../features/favorites/favoritesSlice";
+import { RootState } from "../../features/store";
 import axios from "axios";
 
 export default function MovieCard({ movie }: { movie: any }) {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const favorites = useSelector((state: RootState) => state.favorites)
-  const isFav = favorites.some(f => f.type === "movie" && f.id === movie.id)
+  const favorites = useSelector((state: RootState) => state.favorites);
+  const isFav = favorites.some(f => f.type === "movie" && f.id === movie.id);
 
   const handleTrailerClick = async () => {
     setLoading(true);
@@ -26,7 +26,7 @@ export default function MovieCard({ movie }: { movie: any }) {
       } else {
         alert("No trailer available!");
       }
-    } catch (e) {
+    } catch {
       alert("Failed to load trailer.");
     }
     setLoading(false);
@@ -34,22 +34,22 @@ export default function MovieCard({ movie }: { movie: any }) {
 
   const handleFavorite = () => {
     if (!isFav) {
-      dispatch(addFavorite({ type: 'movie', id: movie.id, payload: movie }))
+      dispatch(addFavorite({ type: "movie", id: movie.id, payload: movie }));
     } else {
-      dispatch(removeFavorite({ type: 'movie', id: movie.id }))
+      dispatch(removeFavorite({ type: "movie", id: movie.id }));
     }
-  }
+  };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded shadow p-4 flex flex-col h-full relative">
+    <div className="bg-white dark:bg-gray-800 rounded shadow p-4 flex flex-col h-full relative text-gray-900 dark:text-gray-100">
       <button
         onClick={handleFavorite}
-        className="absolute top-2 right-2 text-2xl"
+        className="absolute top-2 right-2 text-2xl focus:outline-none"
         title={isFav ? "Remove from favorites" : "Add to favorites"}
       >
         {isFav ? "❤️" : "🤍"}
       </button>
-      
+
       {movie.poster_path && (
         <img
           src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
@@ -58,18 +58,18 @@ export default function MovieCard({ movie }: { movie: any }) {
         />
       )}
       <h3 className="font-semibold mb-2">{movie.title}</h3>
-      <p className="text-xs text-gray-400 mb-1">
+      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
         {movie.release_date ? `Release: ${movie.release_date}` : ""}
         {movie.original_language ? ` | Lang: ${movie.original_language}` : ""}
       </p>
-      <p className="text-xs text-yellow-500 mb-1">
+      <p className="text-xs text-yellow-400 mb-1">
         ★ {movie.vote_average} ({movie.vote_count} ratings)
       </p>
       <p className="text-sm mb-2">{movie.overview}</p>
       <button
         onClick={handleTrailerClick}
         disabled={loading}
-        className="text-white bg-blue-600 px-3 py-1 rounded font-medium hover:bg-blue-700 mt-auto disabled:bg-blue-300"
+        className="text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 px-3 py-1 rounded font-medium mt-auto transition-colors"
       >
         {loading ? "Loading..." : "▶️ Watch Trailer"}
       </button>
