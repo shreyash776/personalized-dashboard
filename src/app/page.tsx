@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../features/store";
 import { setCategories, setMovieGenres, setMusicGenres } from "../features/user/userSlice";
 import axios from "axios";
-
+import { motion } from "framer-motion";
 export default function LandingPage() {
   const dispatch = useDispatch();
 
@@ -164,32 +164,65 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen px-6 py-8 bg-gray-50 dark:bg-gray-900 pt-24">
 
-      <section className="max-w-4xl mx-auto mb-10">
-        <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">What’s your mood today?</h1>
-        <input
-          type="text"
-          placeholder="Describe your mood or interests..."
-          value={moodInput}
-          onChange={(e) => setMoodInput(e.target.value)}
-          className="w-full p-4 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
-        />
-        <div className="flex items-center gap-3 mt-4">
-          <button
-            onClick={handleAnalyzeMood}
-            disabled={loadingInference || !moodInput.trim()}
-            className="px-6 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 focus:outline-none"
-          >
-            {loadingInference ? "Analyzing..." : "Analyze Mood"}
-          </button>
-          <button
-            onClick={() => setShowCategories(true)}
-            className="px-6 py-2 bg-gray-600 text-white font-semibold rounded hover:bg-gray-700 focus:outline-none"
-          >
-            Select Categories Manually
-          </button>
-        </div>
-        {inferenceError && <p className="text-red-600 mt-2">{inferenceError}</p>}
-      </section>
+       <section className="max-w-4xl mx-auto mb-12 px-4 sm:px-6 lg:px-0">
+      <motion.h1
+        className="text-4xl sm:text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600"
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        What’s your mood today?
+      </motion.h1>
+
+      <motion.input
+        type="text"
+        placeholder="Describe your mood or interests..."
+        value={moodInput}
+        onChange={(e) => setMoodInput(e.target.value)}
+        className="w-full p-4 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900/80 backdrop-blur-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      />
+
+     <div className="flex flex-wrap items-center gap-4 mt-6">
+  <motion.button
+    onClick={handleAnalyzeMood}
+    disabled={loadingInference || !moodInput.trim()}
+    className="px-6 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:brightness-110 disabled:opacity-50 focus:outline-none shadow-lg"
+    initial={{ x: -100, opacity: 0 }}
+    animate={{ x: 0, opacity: 1 }}
+    transition={{ duration: 0.6, ease: "easeOut" }}
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    {loadingInference ? "Analyzing..." : "Analyze Mood"}
+  </motion.button>
+
+  <motion.button
+    onClick={() => setShowCategories(true)}
+    className="px-6 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:brightness-110 focus:outline-none shadow-lg"
+    initial={{ x: -100, opacity: 0 }}
+    animate={{ x: 0, opacity: 1 }}
+    transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    Select Categories Manually
+  </motion.button>
+</div>
+
+
+      {inferenceError && (
+        <motion.p
+          className="text-red-600 mt-3 font-medium"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {inferenceError}
+        </motion.p>
+      )}
+    </section>
 
       <section className="max-w-7xl mx-auto mb-12">
         <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Trending News</h2>
