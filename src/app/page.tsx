@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useGetTopHeadlinesQuery } from "../services/newsApi";
 import { useGetTrendingMoviesQuery } from "../services/tmdbApi";
 import NewsCard from "../components/cards/NewsCard";
@@ -11,6 +11,7 @@ import { RootState } from "../features/store";
 import { setCategories, setMovieGenres, setMusicGenres } from "../features/user/userSlice";
 import axios from "axios";
 import { motion } from "framer-motion";
+
 export default function LandingPage() {
   const dispatch = useDispatch();
 
@@ -29,6 +30,57 @@ export default function LandingPage() {
   const [trendingMusic, setTrendingMusic] = useState<any[]>([]);
   const [musicLoading, setMusicLoading] = useState(true);
   const [musicError, setMusicError] = useState("");
+  
+const newsRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>;
+const moviesRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>;
+const musicRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>;
+const renderCarousel = (
+  data: any[],
+  CardComponent: React.ComponentType<any>,
+  ref: React.RefObject<HTMLDivElement>,
+  keyProp: string
+) => (
+  <motion.div
+    ref={ref}
+    className="relative w-full overflow-visible h-auto"
+    initial={{ opacity: 0, x: 100 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ type: "spring", stiffness: 80, damping: 15 }}
+  >
+    <motion.div
+      className="flex gap-6 overflow-x-auto hide-scrollbar px-1 pb-2 pt-2"
+      style={{ scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch" }}
+    >
+      {data.map((item: any, index: number) => {
+        if (!item) return null;
+
+        const key =
+          item && typeof item === "object" && item[keyProp] !== undefined
+            ? item[keyProp]
+            : index;
+
+        return (
+          <motion.div
+            key={key}
+           className="shrink-0 scroll-snap-align-start w-[320px] z-10"
+  whileHover={{ scale: 1.01, zIndex: 20 }} 
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <CardComponent
+              {...{
+                [CardComponent.name === "MusicCard"
+                  ? "track"
+                  : CardComponent.name === "NewsCard"
+                  ? "article"
+                  : "movie"]: item,
+              }}
+            />
+          </motion.div>
+        );
+      })}
+    </motion.div>
+  </motion.div>
+);
 
   
   const DEEZER_GENRE_IDS: Record<string, number> = {
@@ -50,7 +102,7 @@ export default function LandingPage() {
     setMusicError("");
 
     try {
-      console.log("🎶 Incoming musicGenres:", musicGenres);
+      
 
       
       const selectedDeezerGenreIds = musicGenres
@@ -61,7 +113,7 @@ export default function LandingPage() {
         })
         .filter((id): id is number => id !== undefined);
 
-      console.log("🎯 Final genre IDs:", selectedDeezerGenreIds);
+      
 
       const genreQuery = selectedDeezerGenreIds.length > 0
         ? selectedDeezerGenreIds.join(",")
@@ -226,34 +278,23 @@ export default function LandingPage() {
 
       <section className="max-w-7xl mx-auto mb-12">
         <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Trending News</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {newsData?.articles.slice(0, 6).map((article: any) => (
-            <NewsCard key={article.url} article={article} />
-          )) || <div className="text-gray-500 dark:text-gray-400">No trending news available.</div>}
-        </div>
+        {renderCarousel(newsData?.articles.slice(0, 6) || [], NewsCard, newsRef, 'url')}
       </section>
 
       <section className="max-w-7xl mx-auto mb-12">
         <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Trending Movies</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {moviesData?.results.slice(0, 6).map((movie: any) => (
-            <MovieCard key={movie.id} movie={movie} />
-          )) || <div className="text-gray-500 dark:text-gray-400">No trending movies available.</div>}
-        </div>
+        {renderCarousel(moviesData?.results.slice(0, 6) || [], MovieCard, moviesRef, 'id')}
       </section>
 
-      <section className="max-w-7xl mx-auto">
+      <section className="max-w-7xl mx-auto mb-12">
         <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Trending Music</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {musicError && <div className="text-red-600">{musicError}</div>}
-          {trendingMusic.length > 0 ? (
-            trendingMusic.map((track) => <MusicCard key={track.id} track={track} />)
-          ) : (
-            <div className="text-gray-500 dark:text-gray-400">No trending music available.</div>
-          )}
-        </div>
+        {musicError && <div className="text-red-600">{musicError}</div>}
+        {trendingMusic.length > 0 ? (
+          renderCarousel(trendingMusic, MusicCard, musicRef, 'id')
+        ) : (
+          <div className="text-gray-500 dark:text-gray-400">No trending music available.</div>
+        )}
       </section>
-
       {showCategories && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
           <div className="bg-white dark:bg-gray-800 max-w-md w-full rounded p-6 overflow-auto max-h-[80vh]">
