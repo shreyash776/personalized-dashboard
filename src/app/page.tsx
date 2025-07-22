@@ -23,7 +23,6 @@ export default function LandingPage() {
   const newsCategoriesSelected = useSelector((state: RootState) => state.user.categories);
   const movieGenresSelected = useSelector((state: RootState) => state.user.movieGenres);
 
- 
   const { data: newsData, isLoading: newsLoading } = useGetTopHeadlinesQuery("");
   const { data: moviesData, isLoading: moviesLoading } = useGetTrendingMoviesQuery(undefined);
 
@@ -32,57 +31,88 @@ export default function LandingPage() {
   const [musicError, setMusicError] = useState("");
 
   
+  const DEEZER_GENRE_IDS: Record<string, number> = {
+    pop: 132,
+    rock: 152,
+    "hip-hop": 116,
+    jazz: 129,
+    electronic: 106,
+    classical: 98,
+    country: 2,
+    "r&b": 165,
+    metal: 464,
+    reggae: 144,
+  };
+
   useEffect(() => {
-    async function fetchMusic() {
-      setMusicLoading(true);
-      setMusicError("");
+  async function fetchMusic() {
+    setMusicLoading(true);
+    setMusicError("");
 
-      try {
-        const genreQuery = musicGenres.length > 0 ? musicGenres.join(",") : "";
-        const url = genreQuery
-          ? `/api/deezer/tracks?genreId=${encodeURIComponent(genreQuery)}`
-          : "/api/deezer/tracks";
+    try {
+      console.log("🎶 Incoming musicGenres:", musicGenres);
 
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("Failed to fetch music");
+      
+      const selectedDeezerGenreIds = musicGenres
+        .map((g) => {
+          const id = DEEZER_GENRE_IDS[g.toLowerCase()];
+          
+          return id;
+        })
+        .filter((id): id is number => id !== undefined);
 
-        const data = await res.json();
-        setTrendingMusic(data.slice(0, 6));
-      } catch (e) {
-        setMusicError("Failed to load music.");
-      } finally {
-        setMusicLoading(false);
-      }
+      console.log("🎯 Final genre IDs:", selectedDeezerGenreIds);
+
+      const genreQuery = selectedDeezerGenreIds.length > 0
+        ? selectedDeezerGenreIds.join(",")
+        : "";
+
+      const url = genreQuery
+        ? `/api/deezer/tracks?genreName=${encodeURIComponent(genreQuery)}`
+        : "/api/deezer/tracks";
+
+      
+
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to fetch music");
+
+      const data = await res.json();
+      
+      setTrendingMusic(data.slice(0, 6));
+    } catch (error) {
+     
+      setMusicError("Failed to load music.");
+    } finally {
+      setMusicLoading(false);
     }
+  }
 
-    fetchMusic();
-  }, [musicGenres]);
+  fetchMusic();
+}, [musicGenres]);
 
- 
+
   const movieGenresList = [
-  { id: 1, name: "Action" },
-  { id: 2, name: "Adventure" },
-  { id: 3, name: "Animation" },
-  { id: 4, name: "Comedy" },
-  { id: 5, name: "Crime" },
-  { id: 6, name: "Documentary" },
-  { id: 7, name: "Drama" },
-  { id: 8, name: "Family" },
-  { id: 9, name: "Fantasy" },
-  { id: 10, name: "History" },
-  { id: 11, name: "Horror" },
-  { id: 12, name: "Music" },
-  { id: 13, name: "Mystery" },
-  { id: 14, name: "Romance" },
-  { id: 15, name: "Science Fiction" },
-  { id: 16, name: "TV Movie" },
-  { id: 17, name: "Thriller" },
-  { id: 18, name: "War" },
-  { id: 19, name: "Western" },
-];
+    { id: 28, name: "Action" },
+    { id: 12, name: "Adventure" },
+    { id: 16, name: "Animation" },
+    { id: 35, name: "Comedy" },
+    { id: 80, name: "Crime" },
+    { id: 99, name: "Documentary" },
+    { id: 18, name: "Drama" },
+    { id: 10751, name: "Family" },
+    { id: 14, name: "Fantasy" },
+    { id: 36, name: "History" },
+    { id: 27, name: "Horror" },
+    { id: 10402, name: "Music" },
+    { id: 9648, name: "Mystery" },
+    { id: 10749, name: "Romance" },
+    { id: 878, name: "Science Fiction" },
+    { id: 10770, name: "TV Movie" },
+    { id: 53, name: "Thriller" },
+    { id: 10752, name: "War" },
+    { id: 37, name: "Western" },
+  ];
 
-
-  
   const handleAnalyzeMood = async () => {
     if (!moodInput.trim()) return;
     setLoadingInference(true);
@@ -91,14 +121,12 @@ export default function LandingPage() {
     try {
       const { data } = await axios.post("/api/geminiPreferences", { userInput: moodInput });
 
-      
       const newsCategories = ['technology', 'business', 'sports', 'science', 'health', 'entertainment'];
       const musicGenresAvailable = [
         'pop', 'rock', 'hip-hop', 'jazz', 'electronic',
         'classical', 'country', 'r&b', 'metal', 'reggae'
       ];
 
-      
       const filteredNews = Array.isArray(data.news)
         ? data.news.map((c: string) => c.toLowerCase()).filter((c: string) => newsCategories.includes(c))
         : [];
@@ -109,21 +137,20 @@ export default function LandingPage() {
 
       const filteredMoviesIds = Array.isArray(data.movies)
         ? data.movies
-            .map((name: string) =>
-              movieGenresList.find(
-                (g: { id: number; name: string }) => g.name.toLowerCase() === name.toLowerCase()
-              )
+          .map((name: string) =>
+            movieGenresList.find(
+              (g: { id: number; name: string }) => g.name.toLowerCase() === name.toLowerCase()
             )
-            .filter(Boolean)
-            .map((g: { id: number; name: string }) => g!.id)
+          )
+          .filter(Boolean)
+          .map((g: { id: number; name: string }) => g!.id)
         : [];
 
-     
       dispatch(setCategories(filteredNews));
       dispatch(setMusicGenres(filteredMusic));
       dispatch(setMovieGenres(filteredMoviesIds));
 
-      setShowCategories(false); 
+      setShowCategories(false);
     } catch (e) {
       console.error("Failed to infer preferences:", e);
       setInferenceError("Could not analyze your mood. Please try again.");
@@ -136,7 +163,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen px-6 py-8 bg-gray-50 dark:bg-gray-900 pt-24">
-   
+
       <section className="max-w-4xl mx-auto mb-10">
         <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">What’s your mood today?</h1>
         <input
@@ -164,7 +191,6 @@ export default function LandingPage() {
         {inferenceError && <p className="text-red-600 mt-2">{inferenceError}</p>}
       </section>
 
-     
       <section className="max-w-7xl mx-auto mb-12">
         <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Trending News</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -174,7 +200,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-     
       <section className="max-w-7xl mx-auto mb-12">
         <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Trending Movies</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -184,7 +209,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      
       <section className="max-w-7xl mx-auto">
         <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Trending Music</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -197,11 +221,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      
       {showCategories && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
           <div className="bg-white dark:bg-gray-800 max-w-md w-full rounded p-6 overflow-auto max-h-[80vh]">
-           
+            
 
             <button
               onClick={() => setShowCategories(false)}

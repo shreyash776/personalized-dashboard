@@ -9,7 +9,6 @@ import axios from 'axios'
 
 const categoriesAvailable = ['technology', 'business', 'sports', 'science', 'health', 'entertainment']
 
-// Hardcoded music genres list
 const musicGenresAvailable = [
   'pop',
   'rock',

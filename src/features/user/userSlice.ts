@@ -4,14 +4,14 @@ type Preferences = {
   categories: string[]
   darkMode: boolean
   movieGenres: number[]
-  musicGenres: string[]    // New field for music genre preferences
+  musicGenres: string[]    
 }
 
 const initialState: Preferences = {
   categories: ['technology'],
-  darkMode: false,  // default value; do NOT read from localStorage here
+  darkMode: false,  
   movieGenres: [],
-  musicGenres: [],  // initialize empty or with default genres if you want
+  musicGenres: [],  
 }
 
 const userSlice = createSlice({

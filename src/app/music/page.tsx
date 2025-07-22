@@ -17,10 +17,10 @@ export default function MusicPage() {
       setError("");
 
       try {
-        // If no genre selected, fetch default trending tracks
+       
         const genreQuery = musicGenres.length > 0 ? musicGenres.join(",") : "";
         const url = genreQuery
-          ? `/api/deezer/tracks?genreId=${encodeURIComponent(genreQuery)}`
+          ? `/api/deezer/tracks?genreName=${encodeURIComponent(genreQuery)}`
           : "/api/deezer/tracks";
 
         const res = await fetch(url);

@@ -1,6 +1,3 @@
-
-
-import { NextApiRequest, NextApiResponse } from "next";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 
 const llm = new ChatGoogleGenerativeAI({
@@ -10,18 +7,19 @@ const llm = new ChatGoogleGenerativeAI({
   maxRetries: 3,
 });
 
-
 function cleanMarkdownResponse(content: string): string {
   if (!content) return "";
 
-  let cleaned = content.replace(/^``````$/gm, "");
-  try {
-    cleaned = JSON.parse(`"${cleaned.replace(/"/g, '\\"')}"`);
-  } catch {
-    cleaned = cleaned.replace(/\\n/g, "\n");
-  }
-  return cleaned.trim();
+  // Remove ```json or ``` and ending ```
+  const cleaned = content
+    .replace(/```(?:json)?/gi, '')  // Remove ```json or ``` (case-insensitive)
+    .replace(/```/g, '')            // Remove any remaining ```
+    .trim();
+
+  return cleaned;
 }
+
+
 
 function extractTextContent(res: any): string {
   if (!res) return "";
@@ -32,49 +30,69 @@ function extractTextContent(res: any): string {
   return JSON.stringify(res);
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method Not Allowed" });
-  }
-  const { userInput } = req.body;
-  if (!userInput) {
-    return res.status(400).json({ error: "Missing userInput" });
-  }
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
 
- 
-  const newsCategories = ['technology', 'business', 'sports', 'science', 'health', 'entertainment'];
-  const musicGenres = ['pop', 'rock', 'hip-hop', 'jazz', 'electronic', 'classical', 'country', 'r&b', 'metal', 'reggae'];
-  const movieGenres = [
-  "Action",
-  "Adventure",
-  "Animation",
-  "Comedy",
-  "Crime",
-  "Documentary",
-  "Drama",
-  "Family",
-  "Fantasy",
-  "History",
-  "Horror",
-  "Music",
-  "Mystery",
-  "Romance",
-  "Science Fiction",
-  "TV Movie",
-  "Thriller",
-  "War",
-  "Western",
-];
+    const userInput = body.userInput;
+    if (!userInput || typeof userInput !== "string" || !userInput.trim()) {
+      return new Response(
+        JSON.stringify({ error: "Missing or invalid userInput" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
 
- const prompt = `
+    const newsCategories = [
+      "technology",
+      "business",
+      "sports",
+      "science",
+      "health",
+      "entertainment",
+    ];
+    const musicGenres = [
+      "pop",
+      "rock",
+      "hip-hop",
+      "jazz",
+      "electronic",
+      "classical",
+      "country",
+      "r&b",
+      "metal",
+      "reggae",
+    ];
+    const movieGenres = [
+      "Action",
+      "Adventure",
+      "Animation",
+      "Comedy",
+      "Crime",
+      "Documentary",
+      "Drama",
+      "Family",
+      "Fantasy",
+      "History",
+      "Horror",
+      "Music",
+      "Mystery",
+      "Romance",
+      "Science Fiction",
+      "TV Movie",
+      "Thriller",
+      "War",
+      "Western",
+    ];
+
+    const prompt = `
 You are a helpful assistant that categorizes user preferences into predefined categories for news, movies, and music.
 
 User's input: """${userInput}"""
 
 Respond ONLY with a JSON object with keys "news", "movies", and "music":
-- "news": array of categories from [technology, business, sports, science, health, entertainment]
-- "movies": array of movie genres (name strings) from [Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy, History, Horror, Music, Mystery, Romance, Science Fiction, TV Movie, Thriller, War, Western]
-- "music": array of genres from [pop, rock, hip-hop, jazz, electronic, classical, country, r&b, metal, reggae]
+- "news": array of categories from [${newsCategories.join(", ")}]
+- "movies": array of movie genres (name strings) from [${movieGenres.join(", ")}]
+- "music": array of genres from [${musicGenres.join(", ")}]
 
 Only include a category if it is clearly or strongly implied by the user input. Avoid guessing or including categories not supported by the input.
 
@@ -99,23 +117,35 @@ Output:
 }
 
 Respond strictly ONLY with the JSON, no explanations or markdown.
-
 `.trim();
 
-
-  try {
     const llmResponse = await llm.invoke(prompt);
-    console.log("Gemini raw response:", JSON.stringify(llmResponse, null, 2));
-    
     const textContent = extractTextContent(llmResponse);
     const cleaned = cleanMarkdownResponse(textContent);
-
-    
     const result = JSON.parse(cleaned);
 
-    return res.status(200).json(result);
+    if (
+      !result ||
+      typeof result !== "object" ||
+      !Array.isArray(result.news) ||
+      !Array.isArray(result.movies) ||
+      !Array.isArray(result.music)
+    ) {
+      return new Response(
+        JSON.stringify({ error: "Invalid response format from LLM" }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.error("Gemini inference error", error);
-    return res.status(500).json({ error: "Failed to infer preferences" });
+    console.error("Gemini inference error:", error);
+    return new Response(JSON.stringify({ error: "Failed to infer preferences" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
