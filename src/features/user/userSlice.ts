@@ -8,10 +8,7 @@ type Preferences = {
 
 const initialState: Preferences = {
   categories: ['technology'],
-  darkMode:
-    typeof window !== 'undefined' && localStorage.getItem('DASHBOARD_DARK') === '1'
-      ? true
-      : false,
+  darkMode: false,  // default value; do NOT read from localStorage here
   movieGenres: []
 }
 
@@ -25,11 +22,14 @@ const userSlice = createSlice({
     toggleDarkMode(state) {
       state.darkMode = !state.darkMode
     },
+    setDarkMode(state, action: PayloadAction<boolean>) {
+      state.darkMode = action.payload
+    },
     setMovieGenres(state, action: PayloadAction<number[]>) {
       state.movieGenres = action.payload
     }
   }
 })
 
-export const { setCategories, toggleDarkMode, setMovieGenres } = userSlice.actions
+export const { setCategories, toggleDarkMode, setDarkMode, setMovieGenres } = userSlice.actions
 export default userSlice.reducer
