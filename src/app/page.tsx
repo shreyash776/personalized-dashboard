@@ -214,101 +214,117 @@ const renderCarousel = (
   if (newsLoading || moviesLoading || musicLoading) return <div>Loading trending content...</div>;
 
   return (
-    <div className="min-h-screen px-6 py-8 bg-gray-50 dark:bg-gray-900 pt-24">
+   <div className="min-h-screen px-4 sm:px-6 py-8 bg-gray-50 dark:bg-gray-900 pt-24 overflow-x-hidden w-screen">
+ 
+  <section className="max-w-4xl mx-auto mb-12">
+    <motion.h1
+      className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-6 text-center sm:text-left bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600"
+      initial={{ opacity: 0, y: -30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      What’s your mood today?
+    </motion.h1>
 
-       <section className="max-w-4xl mx-auto mb-12 px-4 sm:px-6 lg:px-0">
-      <motion.h1
-        className="text-4xl sm:text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600"
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+    <motion.input
+      type="text"
+      placeholder="Describe your mood or interests..."
+      value={moodInput}
+      onChange={(e) => setMoodInput(e.target.value)}
+      className="w-full p-4 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900/80 backdrop-blur-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+    />
+
+    <div className="flex flex-col sm:flex-row gap-4 mt-6">
+      <motion.button
+        onClick={handleAnalyzeMood}
+        disabled={loadingInference || !moodInput.trim()}
+        className="w-full sm:w-auto px-6 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:brightness-110 disabled:opacity-50 focus:outline-none shadow-lg"
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
-        What’s your mood today?
-      </motion.h1>
+        {loadingInference ? "Analyzing..." : "Analyze Mood"}
+      </motion.button>
 
-      <motion.input
-        type="text"
-        placeholder="Describe your mood or interests..."
-        value={moodInput}
-        onChange={(e) => setMoodInput(e.target.value)}
-        className="w-full p-4 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900/80 backdrop-blur-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      />
+      <motion.button
+        onClick={() => setShowCategories(true)}
+        className="w-full sm:w-auto px-6 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:brightness-110 focus:outline-none shadow-lg"
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        Select Categories Manually
+      </motion.button>
+    </div>
 
-     <div className="flex flex-wrap items-center gap-4 mt-6">
-  <motion.button
-    onClick={handleAnalyzeMood}
-    disabled={loadingInference || !moodInput.trim()}
-    className="px-6 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:brightness-110 disabled:opacity-50 focus:outline-none shadow-lg"
-    initial={{ x: -100, opacity: 0 }}
-    animate={{ x: 0, opacity: 1 }}
-    transition={{ duration: 0.6, ease: "easeOut" }}
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-  >
-    {loadingInference ? "Analyzing..." : "Analyze Mood"}
-  </motion.button>
+    {inferenceError && (
+      <motion.p
+        className="text-red-600 mt-3 font-medium text-center sm:text-left"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        {inferenceError}
+      </motion.p>
+    )}
+  </section>
 
-  <motion.button
-    onClick={() => setShowCategories(true)}
-    className="px-6 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:brightness-110 focus:outline-none shadow-lg"
-    initial={{ x: -100, opacity: 0 }}
-    animate={{ x: 0, opacity: 1 }}
-    transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-  >
-    Select Categories Manually
-  </motion.button>
+ 
+<section className="max-w-7xl mx-auto mb-12 px-4 sm:px-6 lg:px-8 overflow-hidden w-screen">
+  <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white text-center sm:text-left">
+    Trending News
+  </h2>
+  <div className="relative overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+    {renderCarousel(newsData?.articles.slice(0, 6) || [], NewsCard, newsRef, 'url')}
+  </div>
+</section>
+
+
+<section className="max-w-7xl mx-auto mb-12 px-4 sm:px-6 lg:px-8 w-screen">
+  <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white text-center sm:text-left">
+    Trending Movies
+  </h2>
+  <div className="relative overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+    {renderCarousel(moviesData?.results.slice(0, 6) || [], MovieCard, moviesRef, 'id')}
+  </div>
+</section>
+
+
+<section className="max-w-7xl mx-auto mb-12 px-4 sm:px-6 lg:px-8 w-screen">
+  <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white text-center sm:text-left">
+    Trending Music
+  </h2>
+  {musicError && <div className="text-red-600 text-center">{musicError}</div>}
+  <div className="relative overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+    {trendingMusic.length > 0 ? (
+      renderCarousel(trendingMusic, MusicCard, musicRef, 'id')
+    ) : (
+      <div className="text-gray-500 dark:text-gray-400 text-center">No trending music available.</div>
+    )}
+  </div>
+</section>
+
+  {/* Modal for Category Selection */}
+  {showCategories && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+      <div className="bg-white dark:bg-gray-800 max-w-md w-full rounded p-6 overflow-auto max-h-[80vh]">
+        {/* Put your category selection content here */}
+        <button
+          onClick={() => setShowCategories(false)}
+          className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 w-full sm:w-auto"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  )}
 </div>
 
-
-      {inferenceError && (
-        <motion.p
-          className="text-red-600 mt-3 font-medium"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          {inferenceError}
-        </motion.p>
-      )}
-    </section>
-
-      <section className="max-w-7xl mx-auto mb-12">
-        <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Trending News</h2>
-        {renderCarousel(newsData?.articles.slice(0, 6) || [], NewsCard, newsRef, 'url')}
-      </section>
-
-      <section className="max-w-7xl mx-auto mb-12">
-        <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Trending Movies</h2>
-        {renderCarousel(moviesData?.results.slice(0, 6) || [], MovieCard, moviesRef, 'id')}
-      </section>
-
-      <section className="max-w-7xl mx-auto mb-12">
-        <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Trending Music</h2>
-        {musicError && <div className="text-red-600">{musicError}</div>}
-        {trendingMusic.length > 0 ? (
-          renderCarousel(trendingMusic, MusicCard, musicRef, 'id')
-        ) : (
-          <div className="text-gray-500 dark:text-gray-400">No trending music available.</div>
-        )}
-      </section>
-      {showCategories && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 max-w-md w-full rounded p-6 overflow-auto max-h-[80vh]">
-            
-
-            <button
-              onClick={() => setShowCategories(false)}
-              className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
   );
 }

@@ -14,10 +14,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <InitializePreferences />
           
           <ThemeBody>
-          {/* <Sidebar /> */}
+         
         
           <div className="flex-1 flex flex-col bg-gray-500 ">
-            <Header />
+            {/* <Header /> */}
             <main className="flex-1 ">{children}</main>
           </div>
          </ThemeBody>
