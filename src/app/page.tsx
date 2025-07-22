@@ -55,7 +55,7 @@ export default function LandingPage() {
   if (newsLoading || moviesLoading || musicLoading) return <div>Loading trending content...</div>;
 
   return (
-    <div className="min-h-screen px-6 py-8 bg-gray-50 dark:bg-gray-900 pt-20">
+    <div className="min-h-screen px-6 py-8 bg-gray-50 dark:bg-gray-900 pt-24">
      
       <section className="max-w-4xl mx-auto mb-10">
         <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">What’s your mood today?</h1>

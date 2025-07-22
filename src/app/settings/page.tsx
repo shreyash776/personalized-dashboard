@@ -6,7 +6,7 @@ import { setCategories, setMovieGenres, setMusicGenres } from '../../features/us
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
-// Predefined news categories
+
 const categoriesAvailable = ['technology', 'business', 'sports', 'science', 'health', 'entertainment']
 
 // Hardcoded music genres list
@@ -24,18 +24,18 @@ const musicGenresAvailable = [
 ]
 
 export default function SettingsPage() {
-  // News preferences from Redux
+ 
   const selected = useSelector((state: RootState) => state.user.categories)
   const dispatch = useDispatch()
 
-  // Movie genre preferences from Redux
+ 
   const selectedGenres = useSelector((state: RootState) => state.user.movieGenres)
   const [genreList, setGenreList] = useState<{ id: number; name: string }[]>([])
 
-  // Music genre preferences from Redux
+ 
   const selectedMusicGenres = useSelector((state: RootState) => state.user.musicGenres)
 
-  // Fetch movie genres from TMDB API on mount
+
   useEffect(() => {
     async function fetchGenres() {
       try {
@@ -51,22 +51,21 @@ export default function SettingsPage() {
     fetchGenres()
   }, [])
 
-  // Persist News categories to localStorage
   useEffect(() => {
     localStorage.setItem("dashboard_categories", JSON.stringify(selected))
   }, [selected])
 
-  // Persist Movie genres to localStorage
+  
   useEffect(() => {
     localStorage.setItem("dashboard_movieGenres", JSON.stringify(selectedGenres))
   }, [selectedGenres])
 
-  // Persist Music genres to localStorage
+  
   useEffect(() => {
     localStorage.setItem("dashboard_musicGenres", JSON.stringify(selectedMusicGenres))
   }, [selectedMusicGenres])
 
-  // Toggle handlers for News categories
+
   const toggleCategory = (cat: string) => {
     if (selected.includes(cat)) {
       dispatch(setCategories(selected.filter(c => c !== cat)))
@@ -75,7 +74,7 @@ export default function SettingsPage() {
     }
   }
 
-  // Toggle handlers for Movie genres
+  
   const toggleGenre = (id: number) => {
     if (selectedGenres.includes(id)) {
       dispatch(setMovieGenres(selectedGenres.filter(g => g !== id)))
@@ -84,7 +83,7 @@ export default function SettingsPage() {
     }
   }
 
-  // Toggle handlers for Music genres
+  
   const toggleMusicGenre = (genre: string) => {
     if (selectedMusicGenres.includes(genre)) {
       dispatch(setMusicGenres(selectedMusicGenres.filter(g => g !== genre)))
