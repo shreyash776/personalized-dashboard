@@ -15,9 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* Ensure ThemeBody is wrapped around the main content */}
           <ThemeBody>
           <Sidebar />
-          <div className="mt-4 p-4 bg-white dark:bg-black text-black dark:text-white">
-  This text and background should switch colors on dark mode toggle.
-</div>
+        
           <div className="flex-1 flex flex-col bg-white  dark:bg-green-500">
             <Header />
             <main className="flex-1 p-4">{children}</main>

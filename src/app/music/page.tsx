@@ -1,41 +1,57 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import MusicCard from "../../components/cards/MusicCard"
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../features/store";
+import MusicCard from "../../components/cards/MusicCard";
 
 export default function MusicPage() {
-  const [albums, setAlbums] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
+  const musicGenres = useSelector((state: RootState) => state.user.musicGenres);
+  const [tracks, setTracks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    async function fetchAlbums() {
+    async function fetchTracks() {
+      setLoading(true);
+      setError("");
+
       try {
-        const res = await fetch("/api/spotify/new-releases")
-        if (!res.ok) throw new Error("Failed to fetch")
-        const data = await res.json()
-        setAlbums(data)
-      } catch {
-        setError("Failed to fetch Spotify new releases")
+        // If no genre selected, fetch default trending tracks
+        const genreQuery = musicGenres.length > 0 ? musicGenres.join(",") : "";
+        const url = genreQuery
+          ? `/api/deezer/tracks?genreId=${encodeURIComponent(genreQuery)}`
+          : "/api/deezer/tracks";
+
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Failed to fetch tracks");
+
+        const data = await res.json();
+        setTracks(data);
+      } catch (e) {
+        setError("Failed to load tracks.");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
 
-    fetchAlbums()
-  }, [])
+    fetchTracks();
+  }, [musicGenres]);
 
-  if (loading) return <div>Loading new releases…</div>
-  if (error) return <div className="text-red-600">{error}</div>
+  if (loading) return <div>Loading tracks...</div>;
+  if (error) return <div className="text-red-600">{error}</div>;
+  if (tracks.length === 0) return <div>No tracks available</div>;
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Spotify New Releases</h1>
+      <h1 className="text-3xl font-bold mb-6">
+        {musicGenres.length > 0 ? "Tracks Based on Your Selected Genres" : "Trending Tracks (Deezer)"}
+      </h1>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {albums.map((album) => (
-          <MusicCard key={album.id} album={album} />
+        {tracks.map((track) => (
+          <MusicCard key={track.id} track={track} />
         ))}
       </div>
     </div>
-  )
+  );
 }

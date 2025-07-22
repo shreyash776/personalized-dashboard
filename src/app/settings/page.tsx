@@ -1,22 +1,41 @@
 'use client'
+
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../../features/store'
-import { setCategories, setMovieGenres } from '../../features/user/userSlice'
+import { setCategories, setMovieGenres, setMusicGenres } from '../../features/user/userSlice'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
+// Predefined news categories
 const categoriesAvailable = ['technology', 'business', 'sports', 'science', 'health', 'entertainment']
 
+// Hardcoded music genres list
+const musicGenresAvailable = [
+  'pop',
+  'rock',
+  'hip-hop',
+  'jazz',
+  'electronic',
+  'classical',
+  'country',
+  'r&b',
+  'metal',
+  'reggae'
+]
+
 export default function SettingsPage() {
-  // News preferences
+  // News preferences from Redux
   const selected = useSelector((state: RootState) => state.user.categories)
   const dispatch = useDispatch()
 
-  // Movie genre preferences
+  // Movie genre preferences from Redux
   const selectedGenres = useSelector((state: RootState) => state.user.movieGenres)
-  const [genreList, setGenreList] = useState<{ id: number, name: string }[]>([])
+  const [genreList, setGenreList] = useState<{ id: number; name: string }[]>([])
 
-  // Fetch genres from TMDB API on mount
+  // Music genre preferences from Redux
+  const selectedMusicGenres = useSelector((state: RootState) => state.user.musicGenres)
+
+  // Fetch movie genres from TMDB API on mount
   useEffect(() => {
     async function fetchGenres() {
       try {
@@ -25,14 +44,29 @@ export default function SettingsPage() {
           `https://api.themoviedb.org/3/genre/movie/list?api_key=${apiKey}&language=en-US`
         )
         setGenreList(response.data.genres)
-      } catch (e) {
+      } catch {
         setGenreList([])
       }
     }
     fetchGenres()
   }, [])
 
-  // Toggle handlers
+  // Persist News categories to localStorage
+  useEffect(() => {
+    localStorage.setItem("dashboard_categories", JSON.stringify(selected))
+  }, [selected])
+
+  // Persist Movie genres to localStorage
+  useEffect(() => {
+    localStorage.setItem("dashboard_movieGenres", JSON.stringify(selectedGenres))
+  }, [selectedGenres])
+
+  // Persist Music genres to localStorage
+  useEffect(() => {
+    localStorage.setItem("dashboard_musicGenres", JSON.stringify(selectedMusicGenres))
+  }, [selectedMusicGenres])
+
+  // Toggle handlers for News categories
   const toggleCategory = (cat: string) => {
     if (selected.includes(cat)) {
       dispatch(setCategories(selected.filter(c => c !== cat)))
@@ -41,11 +75,21 @@ export default function SettingsPage() {
     }
   }
 
+  // Toggle handlers for Movie genres
   const toggleGenre = (id: number) => {
     if (selectedGenres.includes(id)) {
       dispatch(setMovieGenres(selectedGenres.filter(g => g !== id)))
     } else {
       dispatch(setMovieGenres([...selectedGenres, id]))
+    }
+  }
+
+  // Toggle handlers for Music genres
+  const toggleMusicGenre = (genre: string) => {
+    if (selectedMusicGenres.includes(genre)) {
+      dispatch(setMusicGenres(selectedMusicGenres.filter(g => g !== genre)))
+    } else {
+      dispatch(setMusicGenres([...selectedMusicGenres, genre]))
     }
   }
 
@@ -70,7 +114,7 @@ export default function SettingsPage() {
       </div>
 
       <h2 className="text-2xl font-bold mb-4">Movie Genre Preferences</h2>
-      <div className="grid gap-2">
+      <div className="grid gap-2 mb-8">
         {genreList.length === 0 && <p className="text-gray-400">Loading genres...</p>}
         {genreList.map(genre => (
           <label key={genre.id} className="flex items-center gap-2">
@@ -84,8 +128,26 @@ export default function SettingsPage() {
           </label>
         ))}
       </div>
-      <div className="mt-4 text-gray-500 text-sm">
+      <div className="mt-4 text-gray-500 text-sm mb-8">
         Your dashboard will show movies from your selected genres.
+      </div>
+
+      <h2 className="text-2xl font-bold mb-4">Music Preferences</h2>
+      <div className="grid gap-2 mb-6">
+        {musicGenresAvailable.map(genre => (
+          <label key={genre} className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={selectedMusicGenres.includes(genre)}
+              onChange={() => toggleMusicGenre(genre)}
+              className="accent-blue-600"
+            />
+            {genre[0].toUpperCase() + genre.slice(1)}
+          </label>
+        ))}
+      </div>
+      <div className="mt-4 text-gray-500 text-sm">
+        Your dashboard will show music from your selected genres.
       </div>
     </div>
   )
