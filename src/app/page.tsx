@@ -103,10 +103,10 @@ useEffect(() => {
     setMusicError("");
 
     try {
-      const genreQuery = musicGenres.join(",");
+      const genreQuery = musicGenres.length > 0 ? musicGenres.join(",") : "";
       const url = genreQuery
         ? `/api/deezer/tracks?genreName=${encodeURIComponent(genreQuery)}`
-        : "/api/deezer/tracks"; // ✅ fallback for default music
+        : "/api/deezer/tracks";
 
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch music");
@@ -120,8 +120,9 @@ useEffect(() => {
     }
   }
 
-  fetchMusic(); 
+  fetchMusic();
 }, [musicGenres]);
+
 
 
   const movieGenresList = [
