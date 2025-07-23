@@ -97,50 +97,30 @@ const renderCarousel = (
     reggae: 144,
   };
 
-  useEffect(() => {
+useEffect(() => {
   async function fetchMusic() {
     setMusicLoading(true);
     setMusicError("");
 
     try {
-      
-
-      
-      const selectedDeezerGenreIds = musicGenres
-        .map((g) => {
-          const id = DEEZER_GENRE_IDS[g.toLowerCase()];
-          
-          return id;
-        })
-        .filter((id): id is number => id !== undefined);
-
-      
-
-      const genreQuery = selectedDeezerGenreIds.length > 0
-        ? selectedDeezerGenreIds.join(",")
-        : "";
-
+      const genreQuery = musicGenres.join(",");
       const url = genreQuery
         ? `/api/deezer/tracks?genreName=${encodeURIComponent(genreQuery)}`
-        : "/api/deezer/tracks";
-
-      
+        : "/api/deezer/tracks"; // ✅ fallback for default music
 
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch music");
 
       const data = await res.json();
-      
       setTrendingMusic(data.slice(0, 6));
     } catch (error) {
-     
       setMusicError("Failed to load music.");
     } finally {
       setMusicLoading(false);
     }
   }
 
-  fetchMusic();
+  fetchMusic(); 
 }, [musicGenres]);
 
 
