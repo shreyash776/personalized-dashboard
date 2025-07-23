@@ -34,7 +34,7 @@ export default function MoviesPage() {
   if (error) return <div className="pt-24 text-red-600 text-center">Failed to load movies</div>
 
   return (
-    <div className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8  mx-auto bg-gray-900">
+    <div className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8  mx-auto bg-gray-900 pb-2">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
         <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 to-pink-500">
           Popular Movies

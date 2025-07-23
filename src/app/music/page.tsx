@@ -49,7 +49,7 @@ export default function MusicPage() {
 
   if (loading)
   return (
-    <div className="pt-24 flex justify-center items-center min-h-screen bg-gray-900">
+    <div className="pt-24 flex justify-center items-center min-h-screen bg-gray-900 pb-2">
       <ClipLoader color="#3b82f6" size={48} />
     </div>
   );
