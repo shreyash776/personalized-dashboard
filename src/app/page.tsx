@@ -11,6 +11,7 @@ import { RootState } from "../features/store";
 import { setCategories, setMovieGenres, setMusicGenres } from "../features/user/userSlice";
 import axios from "axios";
 import { motion } from "framer-motion";
+import { ClipLoader } from "react-spinners";
 
 export default function LandingPage() {
   const dispatch = useDispatch();
@@ -211,7 +212,14 @@ const renderCarousel = (
     setLoadingInference(false);
   };
 
-  if (newsLoading || moviesLoading || musicLoading) return <div>Loading trending content...</div>;
+  if (newsLoading || moviesLoading || musicLoading) {
+  return (
+    <div className="flex justify-center items-center h-60">
+            <ClipLoader color="#3b82f6" size={48} />
+      
+    </div>
+  );
+}
 
   return (
    <div className="min-h-screen px-4 sm:px-6 py-8 bg-gray-900 pt-24 overflow-x-hidden w-screen">
