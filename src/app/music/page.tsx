@@ -53,12 +53,12 @@ export default function MusicPage() {
     return <div className="pt-24 text-center text-red-600">{error}</div>
 
   return (
-    <div className="pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl w-screen bg-gray-900 min-h-screen">
+    <div className="pt-24 px-4 sm:px-6 lg:px-8  w-screen bg-gray-900 min-h-screen">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
         <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-yellow-400">
           {musicGenres.length > 0
-            ? "Tracks Based on Your Selected Genres"
-            : "Trending Tracks (Deezer)"}
+            ? "Your Personalized Music Feed"
+            : "Trending Tracks"}
         </h1>
 
         <div className="relative w-full sm:w-80">

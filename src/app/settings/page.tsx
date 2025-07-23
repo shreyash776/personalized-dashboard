@@ -70,7 +70,6 @@ export default function SettingsPage() {
     localStorage.setItem("dashboard_musicGenres", JSON.stringify(selectedMusicGenres));
   }, [selectedMusicGenres]);
 
-  // Toggle handlers for chips
   const toggleCategory = (cat: string) => {
     if (selected.includes(cat)) {
       dispatch(setCategories(selected.filter((c) => c !== cat)));
@@ -95,7 +94,6 @@ export default function SettingsPage() {
     }
   };
 
-  // Chip component
   const Chip = ({
     children,
     selected,
@@ -108,7 +106,7 @@ export default function SettingsPage() {
     return (
       <button
         onClick={onClick}
-        className={`cursor-pointer select-none rounded-full px-4 py-1 border transition-colors duration-150
+        className={`cursor-pointer select-none rounded-full px-4 py-1 border transition-colors duration-150 text-sm sm:text-base
           ${
             selected
               ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
@@ -121,54 +119,63 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      {/* News Categories */}
-      <h2 className="text-2xl font-bold mb-3">Content Preferences</h2>
-      <div className="flex flex-wrap gap-3 mb-6">
-        {categoriesAvailable.map((cat) => (
-          <Chip key={cat} selected={selected.includes(cat)} onClick={() => toggleCategory(cat)}>
-            {cat.charAt(0).toUpperCase() + cat.slice(1)}
-          </Chip>
-        ))}
-      </div>
-      <p className="mb-8 text-gray-600 dark:text-gray-400 text-sm">
-        Your dashboard will show news from your selected categories.
-      </p>
-
-      {/* Movie Genres */}
-      <h2 className="text-2xl font-bold mb-3">Movie Genre Preferences</h2>
-      <div className="flex flex-wrap gap-3 mb-6">
-        {genreList.length === 0 && <p className="text-gray-500 dark:text-gray-400">Loading genres...</p>}
-        {genreList.map((genre) => (
-          <Chip
-            key={genre.id}
-            selected={selectedGenres.includes(genre.id)}
-            onClick={() => toggleGenre(genre.id)}
-          >
-            {genre.name}
-          </Chip>
-        ))}
-      </div>
-      <p className="mb-8 text-gray-600 dark:text-gray-400 text-sm">
-        Your dashboard will show movies from your selected genres.
-      </p>
-
-      {/* Music Genres */}
-      <h2 className="text-2xl font-bold mb-3">Music Preferences</h2>
-      <div className="flex flex-wrap gap-3">
-        {musicGenresAvailable.map((genre) => (
-          <Chip
-            key={genre}
-            selected={selectedMusicGenres.includes(genre)}
-            onClick={() => toggleMusicGenre(genre)}
-          >
-            {genre.charAt(0).toUpperCase() + genre.slice(1)}
-          </Chip>
-        ))}
-      </div>
-      <p className="mt-4 text-gray-600 dark:text-gray-400 text-sm">
-        Your dashboard will show music from your selected genres.
-      </p>
+  <div className="min-h-screen bg-gray-900 text-white pt-22 md:pt-18 px-4 sm:px-6 md:px-12">
+    {/* News Categories */}
+    <h2 className="text-2xl sm:text-3xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
+      Content Preferences
+    </h2>
+    <div className="flex flex-wrap gap-3 mb-6">
+      {categoriesAvailable.map((cat) => (
+        <Chip key={cat} selected={selected.includes(cat)} onClick={() => toggleCategory(cat)}>
+          {cat.charAt(0).toUpperCase() + cat.slice(1)}
+        </Chip>
+      ))}
     </div>
-  );
+    <p className="mb-8 text-gray-400 text-sm sm:text-base">
+      Your dashboard will show news from your selected categories.
+    </p>
+
+    {/* Movie Genres */}
+    <h2 className="text-2xl sm:text-3xl font-bold mb-3 bg-gradient-to-r from-green-400 to-blue-500 text-transparent bg-clip-text">
+      Movie Genre Preferences
+    </h2>
+    <div className="flex flex-wrap gap-3 mb-6">
+      {genreList.length === 0 && (
+        <p className="text-gray-400">Loading genres...</p>
+      )}
+      {genreList.map((genre) => (
+        <Chip
+          key={genre.id}
+          selected={selectedGenres.includes(genre.id)}
+          onClick={() => toggleGenre(genre.id)}
+        >
+          {genre.name}
+        </Chip>
+      ))}
+    </div>
+    <p className="mb-8 text-gray-400 text-sm sm:text-base">
+      Your dashboard will show movies from your selected genres.
+    </p>
+
+    {/* Music Genres */}
+    <h2 className="text-2xl sm:text-3xl font-bold mb-3 bg-gradient-to-r from-pink-400 to-yellow-400 text-transparent bg-clip-text">
+      Music Preferences
+    </h2>
+    <div className="flex flex-wrap gap-3">
+      {musicGenresAvailable.map((genre) => (
+        <Chip
+          key={genre}
+          selected={selectedMusicGenres.includes(genre)}
+          onClick={() => toggleMusicGenre(genre)}
+        >
+          {genre.charAt(0).toUpperCase() + genre.slice(1)}
+        </Chip>
+      ))}
+    </div>
+    <p className="mt-4 text-gray-400 text-sm sm:text-base">
+      Your dashboard will show music from your selected genres.
+    </p>
+  </div>
+);
+
 }
