@@ -22,8 +22,10 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Clone the repository
 
-git clone <your-repo-url>
-cd <your-project-folder>
+git clone https://github.com/shreyash776/personalized-dashboard.git
+
+
+cd personalized-dashboard
 
 ### Install dependencies
 
