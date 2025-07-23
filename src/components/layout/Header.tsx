@@ -25,13 +25,13 @@ export default function Navbar() {
     { name: "Songs", href: "/music" },
     { name: "Favorites", href: "/favorites" },
     { name: "Settings", href: "/settings" },
-    { name: "Trending", href: "/trending" },
+    
   ];
 
   return (
     <motion.nav
       aria-label="Primary Navigation"
-      className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-white border shadow-lg rounded-2xl sm:rounded-full w-[90%] sm:w-[70%] md:w-[60%] max-w-4xl px-4 sm:px-6 py-3"
+      className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-gray-200 border shadow-lg rounded-2xl sm:rounded-full w-[80%] sm:w-[70%] md:w-[60%] max-w-4xl px-4 sm:px-6 py-3"
       initial={{ opacity: 0, y: -30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}

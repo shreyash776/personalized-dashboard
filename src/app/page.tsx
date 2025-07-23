@@ -214,7 +214,7 @@ const renderCarousel = (
   if (newsLoading || moviesLoading || musicLoading) return <div>Loading trending content...</div>;
 
   return (
-   <div className="min-h-screen px-4 sm:px-6 py-8 bg-gray-50 dark:bg-gray-900 pt-24 overflow-x-hidden w-screen">
+   <div className="min-h-screen px-4 sm:px-6 py-8 bg-gray-900 pt-24 overflow-x-hidden w-screen">
  
   <section className="max-w-4xl mx-auto mb-12">
     <motion.h1

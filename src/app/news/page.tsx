@@ -3,8 +3,9 @@
 import { useState, useMemo } from "react"
 import { useSelector } from "react-redux"
 import { RootState } from "../../features/store"
-import { useGetTopHeadlinesQuery } from "../../services/newsApi"  
+import { useGetTopHeadlinesQuery } from "../../services/newsApi"
 import NewsCard from "../../components/cards/NewsCard"
+import { Search } from "lucide-react"
 
 export default function NewsPage() {
   const categories = useSelector((state: RootState) => state.user.categories)
@@ -17,7 +18,6 @@ export default function NewsPage() {
     url: string
     title?: string
     description?: string
-    
   }
 
   const filteredNews = useMemo(() => {
@@ -31,27 +31,36 @@ export default function NewsPage() {
     )
   }, [newsData, search])
 
-  if (isLoading) return <div>Loading news…</div>
-  if (error) return <div className="text-red-600">Failed to load news</div>
+  if (isLoading) return <div className="pt-24 text-center text-gray-500 dark:text-gray-300">Loading news…</div>
+  if (error) return <div className="pt-24 text-red-600 text-center">Failed to load news</div>
 
   return (
-    <div>
-      <div className="w-full flex justify-end my-2">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search news..."
-          className="py-2 px-4 rounded border outline-blue-600 dark:bg-gray-700 dark:text-white min-w-[220px]"
-        />
+    <div className="min-h-screen pt-24 px-4 sm:px-6 lg:px-8  mx-auto bg-gray-900">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+          Top Headlines
+        </h1>
+
+        <div className="relative w-full sm:w-80">
+  <Search className="absolute left-3 inset-y-0 my-auto text-gray-400 dark:text-gray-300 h-5 w-5" />
+  <input
+    type="text"
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    placeholder="Search movies..."
+    className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
+  />
+</div>
+
       </div>
 
-      <h1 className="text-3xl font-bold mb-6">News</h1>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredNews.length === 0 ? (
-          <div className="text-gray-400 col-span-full">No news found.</div>
+          <div className="text-gray-400 col-span-full text-center">No news found.</div>
         ) : (
-          filteredNews.map((article: Article) => <NewsCard key={article.url} article={article} />)
+          filteredNews.map((article: Article) => (
+            <NewsCard key={article.url} article={article} />
+          ))
         )}
       </div>
     </div>
