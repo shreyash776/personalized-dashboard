@@ -6,6 +6,7 @@ import { RootState } from "../../features/store"
 import { useGetPopularMoviesQuery } from "../../services/tmdbApi"
 import MovieCard from "../../components/cards/MovieCard"
 import { Search } from "lucide-react"
+import { ClipLoader } from "react-spinners"
 
 export default function MoviesPage() {
   const genreIds = useSelector((state: RootState) => state.user.movieGenres)
@@ -24,7 +25,12 @@ export default function MoviesPage() {
     )
   }, [movieData, search])
 
-  if (isLoading) return <div className="pt-24 text-center text-gray-500 dark:text-gray-300">Loading movies…</div>
+  if (isLoading)
+  return (
+    <div className="pt-24 flex justify-center items-center min-h-screen bg-gray-900">
+      <ClipLoader color="#3b82f6" size={48} />
+    </div>
+  );
   if (error) return <div className="pt-24 text-red-600 text-center">Failed to load movies</div>
 
   return (

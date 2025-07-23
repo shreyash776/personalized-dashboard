@@ -25,8 +25,21 @@ export default function Navbar() {
     { name: "Songs", href: "/music" },
     { name: "Favorites", href: "/favorites" },
     { name: "Settings", href: "/settings" },
-    
   ];
+
+  const containerVariants = {
+    hidden: {},
+    show: {
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: -10 },
+    show: { opacity: 1, y: 0 },
+  };
 
   return (
     <motion.nav
@@ -36,18 +49,35 @@ export default function Navbar() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <div className="flex items-center justify-between ">
-        <Link
-          href="/"
-          className="text-lg font-semibold tracking-wide cursor-pointer select-none"
+      <div className="flex items-center justify-between">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
         >
-          Dashboard
-        </Link>
+          <Link
+            href="/"
+            className="text-lg font-bold tracking-wide cursor-pointer select-none hover:scale-105 transition-transform"
+          >
+            <motion.span
+              whileHover={{ rotate: [-1, 1, -1, 1, 0], scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 200 }}
+            >
+              Dashboard
+            </motion.span>
+          </Link>
+        </motion.div>
 
-        <div className="hidden sm:flex gap-4 md:gap-6 items-center">
+        <motion.div
+          className="hidden sm:flex gap-4 md:gap-6 items-center"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
           {menuItems.map(({ name, href }) => (
             <motion.div
               key={href}
+              variants={itemVariants}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -59,7 +89,7 @@ export default function Navbar() {
               </Link>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         <button
           className="sm:hidden text-2xl p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
@@ -85,6 +115,9 @@ export default function Navbar() {
               <motion.div
                 key={href}
                 whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
                 onClick={() => setIsOpen(false)}
               >
                 <Link

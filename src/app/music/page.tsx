@@ -5,6 +5,7 @@ import { useSelector } from "react-redux"
 import { RootState } from "../../features/store"
 import MusicCard from "../../components/cards/MusicCard"
 import { Search } from "lucide-react"
+import { ClipLoader } from "react-spinners"
 
 export default function MusicPage() {
   const musicGenres = useSelector((state: RootState) => state.user.musicGenres)
@@ -47,7 +48,11 @@ export default function MusicPage() {
   }, [search, tracks])
 
   if (loading)
-    return <div className="pt-24 text-center text-gray-500 dark:text-gray-300">Loading tracks…</div>
+  return (
+    <div className="pt-24 flex justify-center items-center min-h-screen bg-gray-900">
+      <ClipLoader color="#3b82f6" size={48} />
+    </div>
+  );
 
   if (error)
     return <div className="pt-24 text-center text-red-600">{error}</div>

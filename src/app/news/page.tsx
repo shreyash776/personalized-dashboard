@@ -6,7 +6,7 @@ import { RootState } from "../../features/store"
 import { useGetTopHeadlinesQuery } from "../../services/newsApi"
 import NewsCard from "../../components/cards/NewsCard"
 import { Search } from "lucide-react"
-
+import { ClipLoader } from "react-spinners" 
 export default function NewsPage() {
   const categories = useSelector((state: RootState) => state.user.categories)
   const [search, setSearch] = useState("")
@@ -31,7 +31,12 @@ export default function NewsPage() {
     )
   }, [newsData, search])
 
-  if (isLoading) return <div className="pt-24 text-center text-gray-500 dark:text-gray-300">Loading news…</div>
+  if (isLoading)
+  return (
+    <div className="pt-24 flex justify-center items-center min-h-screen bg-gray-900">
+      <ClipLoader color="#3b82f6" size={48} />
+    </div>
+  );
   if (error) return <div className="pt-24 text-red-600 text-center">Failed to load news</div>
 
   return (
@@ -47,7 +52,7 @@ export default function NewsPage() {
     type="text"
     value={search}
     onChange={(e) => setSearch(e.target.value)}
-    placeholder="Search movies..."
+    placeholder="Search news..."
     className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md"
   />
 </div>
